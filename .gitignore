@@ -1,0 +1,10 @@
+.DS_Store
+*.pyc
+__pycache__/
+.venv/
+firmware_builds/
+*.bin
+*.elf
+*.map
+MapTile.h
+yilan_exports/
