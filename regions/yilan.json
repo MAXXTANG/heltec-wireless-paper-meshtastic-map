@@ -1,0 +1,65 @@
+{
+  "slug": "yilan",
+  "display_name": "Yilan",
+  "description": "Taiwan overview, Yilan county z12, Yilan activity plain z13, and Jiaoxi/Yilan City/Luodong focus zones at z14-z15.",
+  "style": "osm-eink-white-water",
+  "elements": ["land", "water", "roads", "highways", "paths", "boundaries", "labels", "transit"],
+  "regions": [
+    {
+      "name": "Taiwan overview",
+      "type": "grid",
+      "lat": 23.7,
+      "lon": 120.95,
+      "specs": [
+        {"zoom": 7, "grid": 2},
+        {"zoom": 8, "grid": 4},
+        {"zoom": 9, "grid": 6}
+      ]
+    },
+    {
+      "name": "Yilan county",
+      "type": "bbox",
+      "bbox": [121.25, 24.3, 122.1, 25.05],
+      "zooms": [12]
+    },
+    {
+      "name": "Yilan activity plain",
+      "type": "grid",
+      "lat": 24.7,
+      "lon": 121.76,
+      "specs": [
+        {"zoom": 13, "grid": 8}
+      ]
+    },
+    {
+      "name": "Jiaoxi focus",
+      "type": "grid",
+      "lat": 24.82703,
+      "lon": 121.77535,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 4}
+      ]
+    },
+    {
+      "name": "Yilan City focus",
+      "type": "grid",
+      "lat": 24.75911,
+      "lon": 121.75374,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 4}
+      ]
+    },
+    {
+      "name": "Luodong focus",
+      "type": "grid",
+      "lat": 24.67695,
+      "lon": 121.77083,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 4}
+      ]
+    }
+  ]
+}

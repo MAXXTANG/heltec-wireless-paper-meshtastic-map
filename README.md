@@ -1,6 +1,13 @@
-# Heltec Wireless Paper 宜蘭離線地圖韌體教學
+# Heltec Wireless Paper Meshtastic Map
 
-這個 repo 記錄如何替 Heltec Wireless Paper 建立 Meshtastic InkHUD 離線地圖韌體，範例圖資以台灣概覽與宜蘭縣為主。
+這個 repo 記錄如何替 Heltec Wireless Paper 建立 Meshtastic InkHUD 離線地圖韌體。設計方式是一個主 repo 搭配多個地區設定檔，未來要新增台中、台南、高雄等版本時，只要新增 `regions/<city>.json`，不用為每個地區開一個 repo 或分支。
+
+目前已建立並測試：
+
+| 地區 | 設定檔 | 圖磚數 | 壓縮圖資 | Firmware Flash |
+|---|---|---:|---:|---:|
+| 宜蘭 | `regions/yilan.json` | `323` | `1,056,198 bytes` | 約 `98.5%` |
+| 台北 | `regions/taipei.json` | `210` | `1,023,177 bytes` | 約 `97.5%` |
 
 目前實測配置：
 
@@ -10,62 +17,64 @@
 - 地圖功能：InkHUD offline map tiles
 - 授權：本 repo 的教學與輔助腳本使用 MIT License
 
-## 圖資配置
+## Repo 結構
 
-目前可用版本採用分層策略，避免 ESP32-S3 app partition 爆掉：
+- `regions/`：各地區圖資切分設定，例如 `yilan.json`、`taipei.json`
+- `scripts/export_region_inkhud.py`：通用地區匯出腳本，讀取 `regions/*.json` 產生 `MapTile.h`
+- `scripts/export_yilan_*.py`：宜蘭進階版本腳本，包含純等高線與道路疊等高線實驗版
+- `docs/FLASHING.md`：完整產生圖資、編譯、刷機流程
+- `docs/MAP_STRATEGY.md`：宜蘭圖資切分策略與容量評估
+- `docs/CONTOUR_MAPS.md`：台灣等高線圖資可行性
+- `NOTICE.md`：上游專案與圖資來源說明
+
+## 地區策略
+
+Heltec Wireless Paper 的 app partition 很有限，不能把整個城市或縣市都做到 z14/z15。建議使用分層策略：
 
 | 範圍 | Zoom | 用途 |
 |---|---:|---|
 | 台灣概覽 | z7-z9 | 大尺度 overview，避免縮遠時整片空白 |
-| 全宜蘭 | z12 | 縣域級定位 |
-| 宜蘭活動帶 | z13 | 宜蘭平原與主要活動區 |
-| 礁溪 | z14-z15 | 重點活動區細節 |
-| 宜蘭市 | z14-z15 | 重點活動區細節 |
-| 羅東 | z14-z15 | 重點活動區細節 |
+| 全縣市或都會區 | z12 | 區域級定位 |
+| 主要活動帶 | z13 | 平原、都會核心、活動範圍 |
+| 重點區 | z14-z15 | 實際活動熱點與道路細節 |
 
-這版約 `323` 張圖磚，地圖壓縮資料約 `1.05 MB`。在 Heltec Wireless Paper 上編譯後 Flash 使用率約 `98.5%`，已經非常接近上限。
+宜蘭版包含全宜蘭 z12、宜蘭活動帶 z13、礁溪/宜蘭市/羅東 z14-z15。台北版包含台灣概覽、台北盆地 z12、台北市中心 z13、台北車站/信義/士林北投重點區 z14-z15；為了塞入 Heltec Wireless Paper，台北版移除文字標籤與捷運線，且 z15 重點區使用 `3x3` grid。
 
-## 為什麼不做全宜蘭 z14/z15
+## 快速產生地圖
 
-粗估全宜蘭：
+把本 repo 的 `regions/` 與 `scripts/export_region_inkhud.py` 放到 E-ink Map Tiles 專案後：
 
-- z14 約 `1,521` 張圖磚，約 `7.8 MB`
-- z15 約 `5,928` 張圖磚，約 `23 MB`
+```bash
+cd ~/Documents/ESP32/E-ink-Map-Tiles
+.venv/bin/python -u scripts/export_region_inkhud.py regions/yilan.json
+.venv/bin/python -u scripts/export_region_inkhud.py regions/taipei.json
+```
 
-Heltec Wireless Paper 的 app partition 放不下，所以 z14/z15 必須只放重點區域。
+輸出位置：
 
-## 快速流程
+```text
+yilan_exports/yilan/MapTile.h
+yilan_exports/taipei/MapTile.h
+```
 
-1. Clone E-ink Map Tiles 工具。
-2. Clone Meshtastic firmware。
-3. 用本 repo 的匯出腳本產生 `MapTile.h`。
-4. 把 `MapTile.h` 複製到 Meshtastic firmware 的 InkHUD map applet。
-5. 編譯 `heltec-wireless-paper-inkhud`。
-6. 透過 USB serial 刷入 Heltec Wireless Paper。
+再把想刷入的 `MapTile.h` 複製到 Meshtastic firmware：
+
+```bash
+cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/yilan/MapTile.h \
+  ~/Documents/ESP32/meshtastic-firmware-yilan/src/graphics/niche/InkHUD/Applets/Bases/Map/MapTile.h
+```
 
 詳細步驟請看 [docs/FLASHING.md](docs/FLASHING.md)。
 
-## 目錄
+## 為什麼不用分支放不同地區
 
-- [docs/FLASHING.md](docs/FLASHING.md)：完整刷機教學
-- [docs/MAP_STRATEGY.md](docs/MAP_STRATEGY.md)：圖資切分策略與容量評估
-- [docs/CONTOUR_MAPS.md](docs/CONTOUR_MAPS.md)：台灣等高線圖資可行性
-- [scripts/export_yilan_inkhud.py](scripts/export_yilan_inkhud.py)：產生宜蘭 InkHUD `MapTile.h` 的腳本
-- [scripts/export_yilan_contour_inkhud.py](scripts/export_yilan_contour_inkhud.py)：產生純等高線版 InkHUD `MapTile.h` 的腳本
-- [scripts/export_yilan_road_contour_inkhud.py](scripts/export_yilan_road_contour_inkhud.py)：產生道路 + 等高線疊圖版 InkHUD `MapTile.h` 的腳本
-- [NOTICE.md](NOTICE.md)：上游專案與圖資來源說明
+不建議用 `taipei-map`、`taichung-map` 這類分支管理各地圖，因為分支很容易讓文件、腳本與修正分散。比較好的方式是：
 
-## 版本
+- repo 名稱：`heltec-wireless-paper-meshtastic-map`
+- 地區設定：`regions/yilan.json`、`regions/taipei.json`
+- 產出檔案：`yilan_exports/<slug>/MapTile.h`
 
-目前有三種可重建版本：
-
-| 版本 | 腳本 | 地圖來源 | Flash 使用率 |
-|---|---|---|---:|
-| 道路版 | `scripts/export_yilan_inkhud.py` | OpenFreeMap / OpenStreetMap | 約 `98.5%` |
-| 純等高線版 | `scripts/export_yilan_contour_inkhud.py` | 國土測繪中心 `MOI_CONTOUR_2` | 約 `80.1%` |
-| 道路 + 等高線版 | `scripts/export_yilan_road_contour_inkhud.py` | OpenFreeMap / OpenStreetMap + 國土測繪中心 `MOI_CONTOUR_2` | 約 `98.3%` |
-
-道路 + 等高線版為了塞進 Heltec Wireless Paper，移除道路文字標籤與行政邊界，保留道路、高速道路、步道、水域，並只在 z14-z15 重點區疊等高線。
+若未來需要發布可直接刷的 binary，可以用 GitHub Releases 附加 `firmware-*.bin`，不要把大型 binary 直接 commit 進 git。
 
 ## 授權
 

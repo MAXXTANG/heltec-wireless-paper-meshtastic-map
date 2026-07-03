@@ -1,0 +1,65 @@
+{
+  "slug": "taipei",
+  "display_name": "Taipei",
+  "description": "Taiwan overview, Taipei basin z12, central Taipei activity area z13, and major Taipei focus zones at z14-z15. Labels and transit are removed, and z15 focus zones use 3x3 grids, to fit Heltec Wireless Paper flash.",
+  "style": "osm-eink-white-water",
+  "elements": ["land", "water", "roads", "highways", "paths", "boundaries"],
+  "regions": [
+    {
+      "name": "Taiwan overview",
+      "type": "grid",
+      "lat": 23.7,
+      "lon": 120.95,
+      "specs": [
+        {"zoom": 7, "grid": 2},
+        {"zoom": 8, "grid": 4},
+        {"zoom": 9, "grid": 6}
+      ]
+    },
+    {
+      "name": "Taipei basin",
+      "type": "bbox",
+      "bbox": [121.4, 24.95, 121.75, 25.25],
+      "zooms": [12]
+    },
+    {
+      "name": "Central Taipei activity area",
+      "type": "grid",
+      "lat": 25.04776,
+      "lon": 121.53185,
+      "specs": [
+        {"zoom": 13, "grid": 8}
+      ]
+    },
+    {
+      "name": "Taipei Main Station focus",
+      "type": "grid",
+      "lat": 25.04776,
+      "lon": 121.51706,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 3}
+      ]
+    },
+    {
+      "name": "Xinyi focus",
+      "type": "grid",
+      "lat": 25.03396,
+      "lon": 121.56447,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 3}
+      ]
+    },
+    {
+      "name": "Shilin Beitou focus",
+      "type": "grid",
+      "lat": 25.09108,
+      "lon": 121.52407,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 3}
+      ]
+    }
+  ]
+}
