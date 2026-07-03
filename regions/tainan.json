@@ -1,0 +1,65 @@
+{
+  "slug": "tainan",
+  "display_name": "Tainan",
+  "description": "Taiwan overview, Tainan plain z12, Tainan activity area z13, and major Tainan focus zones at z14-z15. Labels and transit are removed, and z15 focus zones use 3x3 grids, to fit Heltec Wireless Paper flash.",
+  "style": "osm-eink-white-water",
+  "elements": ["land", "water", "roads", "highways", "paths", "boundaries"],
+  "regions": [
+    {
+      "name": "Taiwan overview",
+      "type": "grid",
+      "lat": 23.7,
+      "lon": 120.95,
+      "specs": [
+        {"zoom": 7, "grid": 2},
+        {"zoom": 8, "grid": 4},
+        {"zoom": 9, "grid": 6}
+      ]
+    },
+    {
+      "name": "Tainan plain",
+      "type": "bbox",
+      "bbox": [120.00, 22.85, 120.45, 23.35],
+      "zooms": [12]
+    },
+    {
+      "name": "Tainan activity area",
+      "type": "grid",
+      "lat": 23.00,
+      "lon": 120.22,
+      "specs": [
+        {"zoom": 13, "grid": 8}
+      ]
+    },
+    {
+      "name": "Tainan Station focus",
+      "type": "grid",
+      "lat": 22.99718,
+      "lon": 120.21272,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 3}
+      ]
+    },
+    {
+      "name": "Anping focus",
+      "type": "grid",
+      "lat": 22.99973,
+      "lon": 120.16001,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 3}
+      ]
+    },
+    {
+      "name": "Xinying focus",
+      "type": "grid",
+      "lat": 23.30694,
+      "lon": 120.31667,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 3}
+      ]
+    }
+  ]
+}

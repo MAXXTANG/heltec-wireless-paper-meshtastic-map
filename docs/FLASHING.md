@@ -66,6 +66,27 @@ cd ~/Documents/ESP32/E-ink-Map-Tiles
 .venv/bin/python -u scripts/export_region_inkhud.py regions/taipei.json
 ```
 
+高雄版：
+
+```bash
+cd ~/Documents/ESP32/E-ink-Map-Tiles
+.venv/bin/python -u scripts/export_region_inkhud.py regions/kaohsiung.json
+```
+
+台中版：
+
+```bash
+cd ~/Documents/ESP32/E-ink-Map-Tiles
+.venv/bin/python -u scripts/export_region_inkhud.py regions/taichung.json
+```
+
+台南版：
+
+```bash
+cd ~/Documents/ESP32/E-ink-Map-Tiles
+.venv/bin/python -u scripts/export_region_inkhud.py regions/tainan.json
+```
+
 宜蘭道路 + 等高線版：
 
 ```bash
@@ -79,6 +100,9 @@ cd ~/Documents/ESP32/E-ink-Map-Tiles
 yilan_exports/yilan/MapTile.h
 yilan_exports/yilan-road-contour/MapTile.h
 yilan_exports/taipei/MapTile.h
+yilan_exports/kaohsiung/MapTile.h
+yilan_exports/taichung/MapTile.h
+yilan_exports/tainan/MapTile.h
 ```
 
 目前地區配置：
@@ -88,8 +112,13 @@ yilan_exports/taipei/MapTile.h
 | 宜蘭 | 台灣概覽 z7-z9、全宜蘭 z12、宜蘭活動帶 z13、礁溪/宜蘭市/羅東 z14-z15 |
 | 宜蘭道路 + 等高線 | 宜蘭版範圍，移除文字標籤與行政邊界，只在 z14-z15 疊 `MOI_CONTOUR_2` 等高線 |
 | 台北 | 台灣概覽 z7-z9、台北盆地 z12、台北市中心 z13、台北車站/信義/士林北投 z14-z15 |
+| 高雄 | 台灣概覽 z7-z9、高雄都會與沿海平原 z12、高雄活動區 z13、高雄車站/左營/鳳山 z14-z15 |
+| 台中 | 台灣概覽 z7-z9、台中都會盆地 z12、台中活動區 z13、台中車站/西屯市政/豐原 z14-z15 |
+| 台南 | 台灣概覽 z7-z9、台南平原 z12、台南活動區 z13、台南車站/安平/新營 z14-z15 |
 
 台北版為了控制容量，移除文字標籤與捷運線，且 z15 重點區使用 `3x3` grid。
+高雄、台南版同樣移除文字標籤與 transit，z15 重點區使用 `3x3` grid。
+台中道路密度較高，移除文字標籤、transit、boundaries，且 z15 重點區使用 `2x2` grid。
 宜蘭道路 + 等高線版為了控制容量，只在 z14-z15 重點區疊等高線；不要把等高線套到全宜蘭 z12-z15，會超過 Heltec Wireless Paper app partition。
 
 ## 5. 複製 MapTile.h 到 Meshtastic firmware
@@ -112,6 +141,19 @@ cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/taipei/MapTile.h \
 
 ```bash
 cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/yilan-road-contour/MapTile.h \
+  ~/Documents/ESP32/meshtastic-firmware-yilan/src/graphics/niche/InkHUD/Applets/Bases/Map/MapTile.h
+```
+
+以高雄、台中、台南為例，只要替換輸出資料夾名稱：
+
+```bash
+cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/kaohsiung/MapTile.h \
+  ~/Documents/ESP32/meshtastic-firmware-yilan/src/graphics/niche/InkHUD/Applets/Bases/Map/MapTile.h
+
+cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/taichung/MapTile.h \
+  ~/Documents/ESP32/meshtastic-firmware-yilan/src/graphics/niche/InkHUD/Applets/Bases/Map/MapTile.h
+
+cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/tainan/MapTile.h \
   ~/Documents/ESP32/meshtastic-firmware-yilan/src/graphics/niche/InkHUD/Applets/Bases/Map/MapTile.h
 ```
 
@@ -142,6 +184,9 @@ heltec-wireless-paper-inkhud  SUCCESS
 | 宜蘭 | 約 `98.5%` |
 | 宜蘭道路 + 等高線 | 約 `98.3%` |
 | 台北 | 約 `97.5%` |
+| 高雄 | 約 `96.1%` |
+| 台中 | 約 `97.7%` |
+| 台南 | 約 `96.4%` |
 
 若 Flash 超過 `100%`，請縮小 z15 範圍、移除文字標籤、移除 transit，或減少 focus region。
 

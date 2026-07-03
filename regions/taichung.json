@@ -1,0 +1,65 @@
+{
+  "slug": "taichung",
+  "display_name": "Taichung",
+  "description": "Taiwan overview, Taichung urban basin z12, Taichung activity area z13, and major Taichung focus zones at z14-z15. Labels, transit, and boundaries are removed, and z15 focus zones use 2x2 grids, to fit Heltec Wireless Paper flash.",
+  "style": "osm-eink-white-water",
+  "elements": ["land", "water", "roads", "highways", "paths"],
+  "regions": [
+    {
+      "name": "Taiwan overview",
+      "type": "grid",
+      "lat": 23.7,
+      "lon": 120.95,
+      "specs": [
+        {"zoom": 7, "grid": 2},
+        {"zoom": 8, "grid": 4},
+        {"zoom": 9, "grid": 6}
+      ]
+    },
+    {
+      "name": "Taichung urban basin",
+      "type": "bbox",
+      "bbox": [120.45, 24.02, 121.05, 24.38],
+      "zooms": [12]
+    },
+    {
+      "name": "Taichung activity area",
+      "type": "grid",
+      "lat": 24.16,
+      "lon": 120.67,
+      "specs": [
+        {"zoom": 13, "grid": 8}
+      ]
+    },
+    {
+      "name": "Taichung Station focus",
+      "type": "grid",
+      "lat": 24.13683,
+      "lon": 120.68501,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 2}
+      ]
+    },
+    {
+      "name": "Xitun City Hall focus",
+      "type": "grid",
+      "lat": 24.16177,
+      "lon": 120.64616,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 2}
+      ]
+    },
+    {
+      "name": "Fengyuan focus",
+      "type": "grid",
+      "lat": 24.25212,
+      "lon": 120.72236,
+      "specs": [
+        {"zoom": 14, "grid": 4},
+        {"zoom": 15, "grid": 2}
+      ]
+    }
+  ]
+}
