@@ -52,3 +52,24 @@ https://wmts.nlsc.gov.tw/wmts/EMAP5_OPENDATA/default/GoogleMapsCompatible/14/702
 - Heltec Wireless Paper InkHUD Flash：約 `80.1%`
 
 注意：這是「獨立純等高線版」，不是疊加在道路版上。道路版目前 Flash 約 `98.5%`，已經沒有足夠空間再追加等高線。
+
+## 道路 + 等高線疊圖版
+
+`scripts/export_yilan_road_contour_inkhud.py` 會先產生白底道路圖，再把 `MOI_CONTOUR_2` 的等高線轉成黑線並疊到同一張 InkHUD tile。
+
+為了讓 Heltec Wireless Paper 放得下，實測可刷版本使用以下取捨：
+
+- 道路圖保留：`land`, `water`, `roads`, `highways`, `paths`
+- 道路圖移除：`labels`, `transit`, `boundaries`
+- 等高線只疊：`z14`, `z15`
+- 圖磚數：`323`
+- 壓縮圖磚資料：約 `1.05 MB`
+- Heltec Wireless Paper InkHUD Flash：約 `98.3%`
+
+曾測試把等高線疊到 `z12-z15`，壓縮圖資約 `1.26 MB`，韌體會超過 app partition。疊到 `z13-z15` 約 `1.13 MB`，仍然太貼近容量上限。
+
+## 100m 等高線限制
+
+截至本次測試，國土測繪中心 WMTS capabilities 只列出 `MOI_CONTOUR` 與 `MOI_CONTOUR_2` 兩個純等高線 raster 圖層，沒有獨立的「100m 等高線」圖層可以切換。
+
+目前能做到的是使用官方 raster 圖磚中已經畫出的等高線；若圖上只標示 `500`，那通常是標高文字，不代表可以從 raster 直接篩出每 100m 的等高線。要真正控制 100m 間距，需要改用 DEM 或向量等高線資料重新產生等高線，再 rasterize 成 InkHUD 圖磚。

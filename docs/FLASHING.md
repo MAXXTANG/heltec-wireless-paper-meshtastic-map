@@ -38,12 +38,16 @@ python3 -m venv .venv
 
 ```text
 scripts/export_yilan_inkhud.py
+scripts/export_yilan_contour_inkhud.py
+scripts/export_yilan_road_contour_inkhud.py
 ```
 
 複製到：
 
 ```text
 ~/Documents/ESP32/E-ink-Map-Tiles/scripts/export_yilan_inkhud.py
+~/Documents/ESP32/E-ink-Map-Tiles/scripts/export_yilan_contour_inkhud.py
+~/Documents/ESP32/E-ink-Map-Tiles/scripts/export_yilan_road_contour_inkhud.py
 ```
 
 ## 4. 產生 MapTile.h
@@ -67,6 +71,17 @@ yilan_exports/MapTile.h
 cd ~/Documents/ESP32/E-ink-Map-Tiles
 .venv/bin/python -u scripts/export_yilan_contour_inkhud.py
 cp yilan_exports/MapTile_contour.h yilan_exports/MapTile.h
+```
+
+道路 + 等高線疊圖版：
+
+```bash
+cd ~/Documents/ESP32/E-ink-Map-Tiles
+.venv/bin/python -u scripts/export_yilan_road_contour_inkhud.py \
+  --contour-zooms 14,15 \
+  --elements land,water,roads,highways,paths \
+  --out yilan_exports/MapTile_road_contour_z14_z15_noboundaries.h
+cp yilan_exports/MapTile_road_contour_z14_z15_noboundaries.h yilan_exports/MapTile.h
 ```
 
 目前腳本會產生：
@@ -103,7 +118,7 @@ Environment                   Status
 heltec-wireless-paper-inkhud  SUCCESS
 ```
 
-目前這版接近上限，Flash 約 `98.5%`。如果再增加圖磚，可能會超過 app partition。
+目前道路版與道路 + 等高線版都接近上限。道路版 Flash 約 `98.5%`；道路 + z14/z15 等高線版約 `98.3%`，原因是它移除了道路文字標籤與行政邊界。
 
 ## 7. 找到 USB serial port
 
