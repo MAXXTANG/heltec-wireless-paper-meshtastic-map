@@ -39,4 +39,16 @@ https://wmts.nlsc.gov.tw/wmts/EMAP5_OPENDATA/default/GoogleMapsCompatible/14/702
 
 `MOI_CONTOUR_2` 是純等高線圖層，但原始圖磚偏黑底，直接轉成電子紙會太重，需要額外反相與去背景處理。
 
-注意：加入等高線會增加地圖細節與壓縮容量。現在這版韌體 Flash 約 `98.5%`，要加入等高線前，必須先刪減部分 z14/z15 圖磚。
+本 repo 的 `scripts/export_yilan_contour_inkhud.py` 會把 `MOI_CONTOUR_2` 轉成白底黑線：
+
+- 原始黑底會被移除
+- 亮色等高線與標記會轉成黑色 ink pixels
+- 範圍與道路版相同：台灣 z7-z9、全宜蘭 z12、活動帶 z13、礁溪/宜蘭市/羅東 z14-z15
+
+實測純等高線版：
+
+- 圖磚數：`323`
+- 壓縮圖磚資料：約 `441 KB`
+- Heltec Wireless Paper InkHUD Flash：約 `80.1%`
+
+注意：這是「獨立純等高線版」，不是疊加在道路版上。道路版目前 Flash 約 `98.5%`，已經沒有足夠空間再追加等高線。

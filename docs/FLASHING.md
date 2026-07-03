@@ -48,6 +48,8 @@ scripts/export_yilan_inkhud.py
 
 ## 4. 產生 MapTile.h
 
+道路版：
+
 ```bash
 cd ~/Documents/ESP32/E-ink-Map-Tiles
 .venv/bin/python -u scripts/export_yilan_inkhud.py
@@ -57,6 +59,14 @@ cd ~/Documents/ESP32/E-ink-Map-Tiles
 
 ```text
 yilan_exports/MapTile.h
+```
+
+純等高線版：
+
+```bash
+cd ~/Documents/ESP32/E-ink-Map-Tiles
+.venv/bin/python -u scripts/export_yilan_contour_inkhud.py
+cp yilan_exports/MapTile_contour.h yilan_exports/MapTile.h
 ```
 
 目前腳本會產生：
