@@ -64,10 +64,18 @@ cd ~/Documents/ESP32/E-ink-Map-Tiles
 .venv/bin/python -u scripts/export_region_inkhud.py regions/taipei.json
 ```
 
+宜蘭道路 + 等高線版：
+
+```bash
+cd ~/Documents/ESP32/E-ink-Map-Tiles
+.venv/bin/python -u scripts/export_region_inkhud.py regions/yilan-road-contour.json
+```
+
 輸出位置：
 
 ```text
 yilan_exports/yilan/MapTile.h
+yilan_exports/yilan-road-contour/MapTile.h
 yilan_exports/taipei/MapTile.h
 ```
 
@@ -76,9 +84,11 @@ yilan_exports/taipei/MapTile.h
 | 地區 | 內容 |
 |---|---|
 | 宜蘭 | 台灣概覽 z7-z9、全宜蘭 z12、宜蘭活動帶 z13、礁溪/宜蘭市/羅東 z14-z15 |
+| 宜蘭道路 + 等高線 | 宜蘭版範圍，移除文字標籤與行政邊界，只在 z14-z15 疊 `MOI_CONTOUR_2` 等高線 |
 | 台北 | 台灣概覽 z7-z9、台北盆地 z12、台北市中心 z13、台北車站/信義/士林北投 z14-z15 |
 
 台北版為了控制容量，移除文字標籤與捷運線，且 z15 重點區使用 `3x3` grid。
+宜蘭道路 + 等高線版為了控制容量，只在 z14-z15 重點區疊等高線；不要把等高線套到全宜蘭 z12-z15，會超過 Heltec Wireless Paper app partition。
 
 ## 5. 複製 MapTile.h 到 Meshtastic firmware
 
@@ -93,6 +103,13 @@ cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/yilan/MapTile.h \
 
 ```bash
 cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/taipei/MapTile.h \
+  ~/Documents/ESP32/meshtastic-firmware-yilan/src/graphics/niche/InkHUD/Applets/Bases/Map/MapTile.h
+```
+
+以宜蘭道路 + 等高線版為例：
+
+```bash
+cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/yilan-road-contour/MapTile.h \
   ~/Documents/ESP32/meshtastic-firmware-yilan/src/graphics/niche/InkHUD/Applets/Bases/Map/MapTile.h
 ```
 
@@ -121,6 +138,7 @@ heltec-wireless-paper-inkhud  SUCCESS
 | 地區 | Firmware Flash |
 |---|---:|
 | 宜蘭 | 約 `98.5%` |
+| 宜蘭道路 + 等高線 | 約 `98.3%` |
 | 台北 | 約 `97.5%` |
 
 若 Flash 超過 `100%`，請縮小 z15 範圍、移除文字標籤、移除 transit，或減少 focus region。
@@ -179,4 +197,12 @@ Heltec Wireless Paper 沒有內建 GPS。你可以：
 
 ## 11. 宜蘭等高線版本
 
-宜蘭的實驗腳本仍保留在 `scripts/export_yilan_contour_inkhud.py` 與 `scripts/export_yilan_road_contour_inkhud.py`。這兩個版本使用國土測繪中心 `MOI_CONTOUR_2` 圖資，適合之後做登山、溪流、水域活動版本。
+宜蘭道路 + 等高線版建議使用通用流程：
+
+```bash
+.venv/bin/python -u scripts/export_region_inkhud.py regions/yilan-road-contour.json
+```
+
+宜蘭的舊版實驗腳本仍保留在 `scripts/export_yilan_contour_inkhud.py` 與 `scripts/export_yilan_road_contour_inkhud.py`。這兩個版本使用國土測繪中心 `MOI_CONTOUR_2` 圖資，適合之後做登山、溪流、水域活動版本。
+
+更多細節請看 [ROAD_CONTOUR.md](ROAD_CONTOUR.md)。

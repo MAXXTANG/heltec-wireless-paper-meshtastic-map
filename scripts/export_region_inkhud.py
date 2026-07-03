@@ -4,13 +4,18 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import ssl
 import sys
+import time
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from io import BytesIO
 from pathlib import Path
 from typing import Any
 
 import lz4.block
 import numpy as np
+from PIL import Image
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 EINK_REPO_ROOT = Path.cwd()
@@ -21,6 +26,7 @@ from eink_map_tiles import core as cli  # noqa: E402
 
 DEFAULT_STYLE = "osm-eink-white-water"
 DEFAULT_ELEMENTS = ["land", "water", "roads", "highways", "paths", "boundaries", "labels", "transit"]
+DEFAULT_CONTOUR_LAYER = "MOI_CONTOUR_2"
 
 
 def grid_origin(lon: float, lat: float, zoom: int, grid: int) -> tuple[int, int]:
@@ -40,14 +46,44 @@ def tile_bbox(tx: int, ty: int, zoom: int, grid: int) -> tuple[float, float, flo
     return west, south, east, north
 
 
-def pack_inkhud_tile(rgb_image, contrast: float, brightness: float, protect_land: bool) -> list[int]:
-    bw = cli.inkhud_process(rgb_image, contrast, brightness, protect_land=protect_land)
-    arr = np.array(bw, dtype=np.uint8)
-    bits = (arr == 0).astype(np.uint8)
-    bits_col = bits.T.reshape(32, 8, 256)
+def pack_bits(bits: np.ndarray) -> list[int]:
+    bits_col = bits.astype(np.uint8).T.reshape(32, 8, 256)
     shifts = np.array([1 << bit for bit in range(8)], dtype=np.uint8)
     packed = (bits_col * shifts[:, np.newaxis]).sum(axis=1).astype(np.uint8)
     return packed.flatten().tolist()
+
+
+def road_bits(rgb_image, contrast: float, brightness: float, protect_land: bool) -> np.ndarray:
+    bw = cli.inkhud_process(rgb_image, contrast, brightness, protect_land=protect_land)
+    arr = np.array(bw, dtype=np.uint8)
+    return arr == 0
+
+
+def fetch_nlsc_tile(tile: cli.Tile, layer: str, timeout: float, retries: int) -> Image.Image:
+    url = f"https://wmts.nlsc.gov.tw/wmts/{layer}/default/GoogleMapsCompatible/{tile.z}/{tile.y}/{tile.x}"
+    context = ssl._create_unverified_context()
+    last_error: Exception | None = None
+    for attempt in range(1, retries + 1):
+        try:
+            request = urllib.request.Request(url, headers={"User-Agent": cli.DEFAULT_USER_AGENT})
+            with urllib.request.urlopen(request, timeout=timeout, context=context) as response:
+                data = response.read()
+            return Image.open(BytesIO(data)).convert("RGBA")
+        except Exception as exc:  # noqa: BLE001 - retry all transient WMTS/image errors.
+            last_error = exc
+            if attempt < retries:
+                time.sleep(min(2**attempt, 8))
+    raise RuntimeError(f"Failed to fetch {url}: {last_error}")
+
+
+def contour_bits(image: Image.Image, threshold: int) -> np.ndarray:
+    rgba = np.array(image.convert("RGBA"), dtype=np.uint8)
+    alpha = rgba[:, :, 3]
+    rgb = rgba[:, :, :3].astype(np.int16)
+    brightness = rgb.mean(axis=2)
+
+    # NLSC contour tiles use a dark canvas with bright contour strokes.
+    return (alpha > 0) & (brightness >= threshold)
 
 
 def render_tile(
@@ -56,9 +92,14 @@ def render_tile(
     elements: list[str],
     contrast: float,
     brightness: float,
+    contour: dict[str, Any] | None,
 ) -> tuple[int, int, int, list[int]]:
     rgb = cli.render_openfreemap_image(tile, cli.DEFAULT_USER_AGENT, 30.0, 3, elements, style)
-    raw = pack_inkhud_tile(rgb, contrast, brightness, protect_land="land" in set(elements))
+    bits = road_bits(rgb, contrast, brightness, protect_land="land" in set(elements))
+    if contour and tile.z in set(contour["zooms"]):
+        overlay = fetch_nlsc_tile(tile, str(contour["layer"]), 30.0, 3)
+        bits = bits | contour_bits(overlay, int(contour["threshold"]))
+    raw = pack_bits(bits)
     return tile.z, tile.x, tile.y, raw
 
 
@@ -116,6 +157,7 @@ def build_tile_header(
     tile_data: list[tuple[int, int, int, list[int]]],
     config: dict[str, Any],
     style: str,
+    contour: dict[str, Any] | None,
     region_comments: list[str],
 ) -> tuple[str, int]:
     zoom_set = sorted({tile[0] for tile in tile_data})
@@ -133,6 +175,9 @@ def build_tile_header(
         "// Each tile is 256x256px = 8192 bytes uncompressed, stored as raw LZ4 blocks.",
         "// Byte layout is COLUMN-MAJOR: byte = tile[(px/8)*256 + py], bit = px%8.",
     ]
+    if contour:
+        contour_text = ", ".join(f"z{z}" for z in sorted(contour["zooms"]))
+        lines.append(f"// contour layer: {contour['layer']}; applied on {contour_text if contour_text else 'none'}")
     if config.get("description"):
         lines.append(f"// {config['description']}")
     lines.extend(f"// {comment}" for comment in region_comments)
@@ -164,6 +209,11 @@ def load_config(path: Path) -> dict[str, Any]:
         raise ValueError(f"{path} is missing slug")
     if "regions" not in config:
         raise ValueError(f"{path} is missing regions")
+    if "contour" in config:
+        contour = config["contour"]
+        contour["layer"] = str(contour.get("layer", DEFAULT_CONTOUR_LAYER))
+        contour["zooms"] = [int(zoom) for zoom in contour.get("zooms", [])]
+        contour["threshold"] = int(contour.get("threshold", 80))
     return config
 
 
@@ -179,19 +229,23 @@ def main() -> int:
     config = load_config(args.region)
     style = str(config.get("style", DEFAULT_STYLE))
     elements = [str(item) for item in config.get("elements", DEFAULT_ELEMENTS)]
+    contour = config.get("contour")
     out = args.out or EINK_REPO_ROOT / "yilan_exports" / str(config["slug"]) / "MapTile.h"
 
     print(f"{config.get('display_name', config['slug'])} InkHUD export")
     print(f"Region config: {args.region}")
     print(f"Style: {style}")
     print(f"Elements: {', '.join(elements)}")
+    if contour:
+        print(f"Contour layer: {contour['layer']}")
+        print(f"Contour zooms: {', '.join(str(z) for z in sorted(contour['zooms']))}")
 
     tiles, region_comments = collect_tiles(config)
 
     tile_data: list[tuple[int, int, int, list[int]]] = []
     with ThreadPoolExecutor(max_workers=max(1, args.workers)) as executor:
         futures = {
-            executor.submit(render_tile, tile, style, elements, args.contrast, args.brightness): tile
+            executor.submit(render_tile, tile, style, elements, args.contrast, args.brightness, contour): tile
             for tile in tiles
         }
         for index, future in enumerate(as_completed(futures), 1):
@@ -200,7 +254,7 @@ def main() -> int:
             print(f"  rendered {index:3d}/{len(tiles)} z{tile.z}/{tile.x}/{tile.y}")
 
     tile_data.sort(key=lambda item: (item[0], item[1], item[2]))
-    header, total_bytes = build_tile_header(tile_data, config, style, region_comments)
+    header, total_bytes = build_tile_header(tile_data, config, style, contour, region_comments)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(header, encoding="utf-8")
 
