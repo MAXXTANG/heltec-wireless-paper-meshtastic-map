@@ -2,6 +2,8 @@
 
 以下流程以 macOS 為例，目標是建立含指定地區離線地圖的 Meshtastic InkHUD 韌體。範例使用宜蘭與台北，但同一套流程可以套用到任何 `regions/*.json`。
 
+如果你的 Heltec Wireless Paper 還沒有安裝過 Meshtastic，請先看 [MESHTASTIC_INSTALL.md](MESHTASTIC_INSTALL.md)。這份文件會先帶你完成官方 Web Flasher、`heltec-wireless-paper-inkhud` 編譯、App 初始設定與外殼資源。
+
 ## 1. 準備目錄
 
 建議工作目錄：

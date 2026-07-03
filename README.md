@@ -2,13 +2,20 @@
 
 這個 repo 記錄如何替 Heltec Wireless Paper 建立 Meshtastic InkHUD 離線地圖韌體。設計方式是一個主 repo 搭配多個地區設定檔，未來要新增台中、台南、高雄等版本時，只要新增 `regions/<city>.json`，不用為每個地區開一個 repo 或分支。
 
-目前已建立並測試：
+## 目前版本
+
+目前 repo 上有三個主流程版本：
 
 | 地區 | 設定檔 | 圖磚數 | 壓縮圖資 | Firmware Flash |
 |---|---|---:|---:|---:|
 | 宜蘭 | `regions/yilan.json` | `323` | `1,056,198 bytes` | 約 `98.5%` |
 | 宜蘭道路 + 等高線 | `regions/yilan-road-contour.json` | `323` | `1,047,385 bytes` | 約 `98.3%` |
 | 台北 | `regions/taipei.json` | `210` | `1,023,177 bytes` | 約 `97.5%` |
+
+另外保留兩個宜蘭實驗腳本：
+
+- `scripts/export_yilan_contour_inkhud.py`：純等高線版
+- `scripts/export_yilan_road_contour_inkhud.py`：舊版宜蘭道路 + 等高線疊圖腳本
 
 目前實測配置：
 
@@ -23,6 +30,8 @@
 - `regions/`：各地區圖資切分設定，例如 `yilan.json`、`yilan-road-contour.json`、`taipei.json`
 - `scripts/export_region_inkhud.py`：通用地區匯出腳本，讀取 `regions/*.json` 產生 `MapTile.h`
 - `scripts/export_yilan_*.py`：宜蘭進階版本腳本，包含純等高線與道路疊等高線實驗版
+- `docs/VERSIONS.md`：目前地圖版本總表
+- `docs/MESHTASTIC_INSTALL.md`：Heltec Wireless Paper 安裝 Meshtastic 的基礎流程
 - `docs/FLASHING.md`：完整產生圖資、編譯、刷機流程
 - `docs/MAP_STRATEGY.md`：宜蘭圖資切分策略與容量評估
 - `docs/CONTOUR_MAPS.md`：台灣等高線圖資可行性
@@ -69,6 +78,18 @@ cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/yilan/MapTile.h \
 ```
 
 詳細步驟請看 [docs/FLASHING.md](docs/FLASHING.md)。
+
+## Meshtastic 安裝
+
+如果你的 Heltec Wireless Paper 還沒有安裝 Meshtastic，請先看：
+
+- [docs/MESHTASTIC_INSTALL.md](docs/MESHTASTIC_INSTALL.md)
+
+這份文件包含官方 Web Flasher、手動編譯 `heltec-wireless-paper-inkhud`、App 初始設定與外殼資源。
+
+## 外殼資源
+
+- [HP - Heltec Wireless Paper Case for Meshtastic](https://www.printables.com/model/956383-hp-heltec-wireless-paper-case-for-meshtastic)
 
 ## 為什麼不用分支放不同地區
 
