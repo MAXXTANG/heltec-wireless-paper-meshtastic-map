@@ -106,7 +106,7 @@ cp ~/Documents/ESP32/E-ink-Map-Tiles/yilan_exports/yilan/MapTile.h \
 
 ## 外殼資源
 
-- [HP - Heltec Wireless Paper Case for Meshtastic](https://www.printables.com/model/956383-hp-heltec-wireless-paper-case-for-meshtastic)
+- [Heltec Wireless Paper Case for Meshtastic](https://www.printables.com/model/956383-hp-heltec-wireless-paper-case-for-meshtastic/)
 
 ## 為什麼不用分支放不同地區
 

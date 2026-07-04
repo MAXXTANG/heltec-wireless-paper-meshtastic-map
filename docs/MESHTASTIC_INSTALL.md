@@ -99,6 +99,6 @@ pio run -e heltec-wireless-paper-inkhud -t upload --upload-port /dev/cu.usbseria
 
 可參考這個 3D 列印外殼：
 
-- HP - Heltec Wireless Paper Case for Meshtastic：https://www.printables.com/model/956383-hp-heltec-wireless-paper-case-for-meshtastic
+- Heltec Wireless Paper Case for Meshtastic：<https://www.printables.com/model/956383-hp-heltec-wireless-paper-case-for-meshtastic/>
 
 列印外殼前請確認你的板子版本、電池尺寸、天線接頭與按鍵位置是否相容。
