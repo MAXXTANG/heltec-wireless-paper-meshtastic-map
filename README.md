@@ -2,6 +2,10 @@
 
 這個 repo 記錄如何替 Heltec Wireless Paper 建立 Meshtastic InkHUD 離線地圖韌體。設計方式是一個主 repo 搭配多個地區設定檔，未來要新增台中、台南、高雄等版本時，只要新增 `regions/<city>.json`，不用為每個地區開一個 repo 或分支。
 
+![Heltec Wireless Paper 顯示宜蘭離線地圖](docs/images/heltec-wireless-paper-yilan-map.jpg)
+
+上圖是 Heltec Wireless Paper 實機顯示宜蘭離線地圖的測試畫面。背景地圖已預先壓縮進 InkHUD 韌體，不需要即時下載線上地圖。
+
 ## 目前版本
 
 目前 repo 上有六個主流程版本：
