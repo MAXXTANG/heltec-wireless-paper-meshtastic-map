@@ -20,7 +20,7 @@
 
 這個方法適合先確認硬體正常、先跑官方 Meshtastic，不含自訂離線地圖。
 
-1. 使用 Chrome 或 Edge 開啟 https://flasher.meshtastic.org/。
+1. 使用 Chrome 或 Edge 開啟 <https://flasher.meshtastic.org/>。
 2. 用 USB-C 接上 Heltec Wireless Paper。
 3. 選擇 ESP32 類裝置，連接 serial port。
 4. 裝置型號選 Heltec Wireless Paper 對應韌體。
