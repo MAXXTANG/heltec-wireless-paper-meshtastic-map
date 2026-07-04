@@ -1,6 +1,10 @@
 # Heltec Wireless Paper Meshtastic Map
 
+![Heltec Wireless Paper x Meshtastic Map 封面](docs/images/cover-heltec-wireless-paper-meshtastic-map.jpg)
+
 這個 repo 記錄如何替 Heltec Wireless Paper 建立 Meshtastic InkHUD 離線地圖韌體。設計方式是一個主 repo 搭配多個地區設定檔，未來要新增台中、台南、高雄等版本時，只要新增 `regions/<city>.json`，不用為每個地區開一個 repo 或分支。
+
+## 實機範例
 
 ![Heltec Wireless Paper 顯示宜蘭離線地圖](docs/images/heltec-wireless-paper-yilan-map.jpg)
 
